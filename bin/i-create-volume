@@ -4,21 +4,18 @@
 
 source $(dirname $0)/../inc/ec2-include
 
-if [ ! $4 ]; then
+if [ ! $3 ]; then
   echo "Usage: $(basename $0) DEVICE MOUNT_POINT SNAPSHOT SIZE"
   echo
-  echo "           DEVICE - The device location on the EC2 instance that you would like the EBS volume attached to."
-  echo "                    Can be specified as 'auto' to automatically choose an available device."
   echo "      MOUNT_POINT - The location you would like the EBS Volume mounted to. (E.g. /ebs)"
   echo "         SNAPSHOT - The snapshot to base this EBS volume on. Can be specified as 'none'."
   echo "             SIZE - The size of the EBS volume in gigabytes. If using an existing snapshot specify 'auto' to use the snapshot size."
   exit
 fi
 
-DEVICE=$1
-MOUNT_POINT=$2
-SNAPSHOT=$3
-SIZE_ARGUMENT="--size $4";
+MOUNT_POINT=$1
+SNAPSHOT=$2
+SIZE_ARGUMENT="--size $3";
 
 if [ -d "$MOUNT_POINT" ]; then
   echo "Warning: The mount point you specified ($MOUNT_POINT) already contains a directory"
