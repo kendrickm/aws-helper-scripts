@@ -27,8 +27,8 @@ fi
 
 # Tag this EBS volume
 echo "Adding tags to the EBS volume..."
-INSTANCE_NAME=$(ec2-describe-tags --filter "resource-id=$INSTANCE_ID" --filter "key=Name" | cut -f5)
-ec2-create-tags $VOLUME_ID --tag "Server=$INSTANCE_NAME" --tag "Mount point=$MOUNT_POINT"
+INSTANCE_NAME=$(ec2-describe-tags --filter "resource-id=$INSTANCE_ID" --region $REGION --filter "key=Name" | cut -f5)
+ec2-create-tags $VOLUME_ID --tag "Server=$INSTANCE_NAME" --tag "Mount point=$MOUNT_POINT" --region $REGION
 echo
 
 # If the user specified auto we locate the next avaliable device location
@@ -58,7 +58,7 @@ elif [ $VOLUME_ATTACHED ]; then
 # Attach volume
 else
   echo "Attaching EBS Volume..."
-  ec2-attach-volume $VOLUME_ID --instance $INSTANCE_ID --device /dev/sdk$DEVICE_NUMBER
+  ec2-attach-volume $VOLUME_ID --instance $INSTANCE_ID --device /dev/sdk$DEVICE_NUMBER --region $REGION
   echo
   # Wait for the volume to be attached before we format and mount it
   while [ ! -e /dev/xvdk$DEVICE_NUMBER ]; do sleep 1; done
