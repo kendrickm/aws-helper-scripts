@@ -71,7 +71,7 @@ fi
 
 # Mount the EBS Volume persistantly
 echo "Adding mount point '$MOUNT_POINT' to '/etc/fstab'..."
-sudo echo "/dev/xvdf $MOUNT_POINT ext4 noatime 0 0" >> /etc/fstab
+echo "/dev/xvdf $MOUNT_POINT ext4 noatime 0 0" | sudo tee --append /etc/fstab
 echo
 
 echo "Creating mount point and mounting device..."
