@@ -35,7 +35,7 @@ fi
 
 echo "Creating EBS Volume..."
 # Place output into array so we can parse the Volume ID
-OUTPUT=( $(ec2-create-volume $SIZE_ARGUMENT --availability-zone $AVAILABILITY_ZONE) )
+OUTPUT=( $(ec2-create-volume $SIZE_ARGUMENT --availability-zone $AVAILABILITY_ZONE --region $REGION) )
 echo ${OUTPUT[*]}
 echo
 
