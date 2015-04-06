@@ -76,4 +76,4 @@ echo
 
 echo "Creating mount point and mounting device..."
 if [ ! -d "$MOUNT_POINT" ]; then sudo mkdir $MOUNT_POINT; fi
-mount $MOUNT_POINT
+sudo mount $MOUNT_POINT
