@@ -42,7 +42,7 @@ if [ $DEVICE = "auto" ]; then
 fi
 
 # Check if volume is already attached to an instance
-VOLUME_ATTACHED=( $(ec2-describe-volumes $VOLUME_ID | grep "attached") )
+VOLUME_ATTACHED=( $(ec2-describe-volumes $VOLUME_ID --region $REGION | grep "attached") )
 VOLUME_ATTACHED=${VOLUME_ATTACHED[2]}
 
 # Check if volume is attached to this instance
