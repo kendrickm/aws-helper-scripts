@@ -9,9 +9,10 @@ if ! type ec2-version >/dev/null 2>&1; then
   exit 1
 fi
 
-CURL_META_DATA="curl --retry 3 --silent --show-error --fail -L http://169.254.169.254/2011-01-01"
+CURL_META_DATA="curl --retry 3 --silent --show-error --fail -L http://169.254.169.254/latest"
 
 INSTANCE_ID=$($CURL_META_DATA/meta-data/instance-id)
 AVAILABILITY_ZONE=$($CURL_META_DATA/meta-data/placement/availability-zone)
-IP=$($CURL_META_DATA/meta-data/public-ipv4)
+IP=$($CURL_META_DATA/meta-data/private-ipv4)
+REGION="`echo \"$AVAILABILITY_ZON\" | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
 
