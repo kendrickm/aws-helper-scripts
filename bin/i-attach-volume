@@ -7,12 +7,18 @@ if [ ! $3 ]; then
   echo
   echo "        VOLUME_ID - The Volume ID of the EBS volume you'd like to attach to this ec2 instance."
   echo "      MOUNT_POINT - The location you would like the EBS Volume mounted to. (E.g. /ebs)"
+  echo "           DEVICE - Letter to mount. Defaults to f"
   exit
 fi
 
 VOLUME_ID=$1
 MOUNT_POINT=$2
+DEVICE=$3
 FORMAT=true
+
+if [ -n $DEVICE ]; then
+  DEVICE=f
+fi
 
 if [ -d "$MOUNT_POINT" ]; then
   echo "Warning: The mount point you specified ($MOUNT_POINT) already contains a directory"
@@ -46,15 +52,15 @@ elif [ $VOLUME_ATTACHED ]; then
 # Attach volume
 else
   echo "Attaching EBS Volume..."
-  ec2-attach-volume $VOLUME_ID --instance $INSTANCE_ID --device /dev/sdf --region $REGION
+  ec2-attach-volume $VOLUME_ID --instance $INSTANCE_ID --device /dev/sd$DEVICE --region $REGION
   echo
   # Wait for the volume to be attached before we format and mount it
-  while [ ! -e /dev/xvdf ]; do sleep 1; done
+  while [ ! -e /dev/xvd$DEVICE ]; do sleep 1; done
 fi
 
 if [ "$FORMAT" == "true" ]; then
   echo "Formatting the device with an Ext4 filesystem..."
-  sudo mkfs.ext4 /dev/xvdf
+  sudo mkfs.ext4 /dev/xvd$DEVICE
   echo
 fi
 
@@ -71,7 +77,7 @@ fi
 
 # Mount the EBS Volume persistantly
 echo "Adding mount point '$MOUNT_POINT' to '/etc/fstab'..."
-echo "/dev/xvdf $MOUNT_POINT ext4 noatime 0 0" | sudo tee --append /etc/fstab
+echo "/dev/xvd$DEVICE $MOUNT_POINT ext4 noatime 0 0" | sudo tee --append /etc/fstab
 echo
 
 echo "Creating mount point and mounting device..."

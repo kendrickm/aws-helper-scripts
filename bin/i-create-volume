@@ -12,6 +12,7 @@ if [ ! $3 ]; then
   echo "             SIZE - The size of the EBS volume in gigabytes. If using an existing snapshot specify 'auto' to use the snapshot size."
   echo "             TYPE - The type of EBS volume. Can be 'standard' for magnetic, 'gp2' for General Purpose SSDs, or 'io1' for Provisioned IOPS. Defaults to standard"
   echo "             IOPS - REQUIRED if TYPE is io1"
+  echo "           DEVICE - Letter to mount. Defaults to f"
   exit
 fi
 
@@ -21,13 +22,13 @@ SIZE_ARGUMENT="--size $3";
 TYPE=$4
 IOPS=$5
 
-if [-n $TYPE]; then
+if [ -n $TYPE ]; then
   TYPEARG="--type standard"
 else
   TYPEARG="--type $TYPE"
 fi
 
-if [$TYPE == "io1"]; then
+if [ $TYPE == "io1" ]; then
   IOPSARG="--iops $IOPS"
 fi
 
