@@ -5,17 +5,31 @@
 source $(dirname $0)/../inc/ec2-include
 
 if [ ! $3 ]; then
-  echo "Usage: $(basename $0) DEVICE MOUNT_POINT SNAPSHOT SIZE"
+  echo "Usage: $(basename $0) DEVICE MOUNT_POINT SNAPSHOT SIZE TYPE"
   echo
   echo "      MOUNT_POINT - The location you would like the EBS Volume mounted to. (E.g. /ebs)"
   echo "         SNAPSHOT - The snapshot to base this EBS volume on. Can be specified as 'none'."
   echo "             SIZE - The size of the EBS volume in gigabytes. If using an existing snapshot specify 'auto' to use the snapshot size."
+  echo "             TYPE - The type of EBS volume. Can be 'standard' for magnetic, 'gp2' for General Purpose SSDs, or 'io1' for Provisioned IOPS. Defaults to standard"
+  echo "             IOPS - REQUIRED if TYPE is io1"
   exit
 fi
 
 MOUNT_POINT=$1
 SNAPSHOT=$2
 SIZE_ARGUMENT="--size $3";
+TYPE=$4
+IOPS=$5
+
+if [-n $TYPE]; then
+  TYPEARG="--type standard"
+else
+  TYPEARG="--type $TYPE"
+fi
+
+if [$TYPE == "io1"]; then
+  IOPSARG="--iops $IOPS"
+fi
 
 if [ -d "$MOUNT_POINT" ]; then
   echo "Warning: The mount point you specified ($MOUNT_POINT) already contains a directory"
@@ -32,7 +46,7 @@ fi
 
 echo "Creating EBS Volume..."
 # Place output into array so we can parse the Volume ID
-OUTPUT=( $(ec2-create-volume $SIZE_ARGUMENT --availability-zone $AVAILABILITY_ZONE --region $REGION) )
+OUTPUT=( $(ec2-create-volume $SIZE_ARGUMENT --availability-zone $AVAILABILITY_ZONE --region $REGION $TYPEARG $IOPSARG) )
 echo ${OUTPUT[*]}
 echo
 
