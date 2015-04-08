@@ -16,7 +16,11 @@ MOUNT_POINT=$2
 DEVICE=$3
 FORMAT=true
 
-if [ -n $DEVICE ]; then
+if [$USER != 'root']; then
+  echo "User isn't root so running comands via sudo"
+  USE_SUDO=sudo
+
+if [ -z $DEVICE ]; then
   echo "No device passed in, using f as default letter"
   DEVICE=f
 fi
@@ -61,7 +65,7 @@ fi
 
 if [ "$FORMAT" == "true" ]; then
   echo "Formatting the device with an Ext4 filesystem..."
-  sudo mkfs.ext4 /dev/xvd$DEVICE
+  $USE_SUDO mkfs.ext4 /dev/xvd$DEVICE
   echo
 fi
 
@@ -72,15 +76,15 @@ if [ "$FSTAB_CONTENT" ]; then
   echo "Found an old entry for this device in '/etc/fstab'. Removing:"
   echo "$FSTAB_CONTENT"
   echo
-  mv /etc/fstab /etc/fstab.bak
+  $USE_SUDO mv /etc/fstab /etc/fstab.bak
   grep -v " $MOUNT_POINT " /etc/fstab.bak > /etc/fstab
 fi
 
 # Mount the EBS Volume persistantly
 echo "Adding mount point '$MOUNT_POINT' to '/etc/fstab'..."
-echo "/dev/xvd$DEVICE $MOUNT_POINT ext4 noatime 0 0" | sudo tee --append /etc/fstab
+echo "/dev/xvd$DEVICE $MOUNT_POINT ext4 noatime 0 0" | $USE_SUDO tee --append /etc/fstab
 echo
 
 echo "Creating mount point and mounting device..."
-if [ ! -d "$MOUNT_POINT" ]; then sudo mkdir $MOUNT_POINT; fi
-sudo mount $MOUNT_POINT
+if [ ! -d "$MOUNT_POINT" ]; then $USE_SUDO mkdir $MOUNT_POINT; fi
+$USE_SUDO mount $MOUNT_POINT
