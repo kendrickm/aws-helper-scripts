@@ -19,6 +19,7 @@ FORMAT=true
 if [$USER != 'root']; then
   echo "User isn't root so running comands via sudo"
   USE_SUDO=sudo
+fi
 
 if [ -z $DEVICE ]; then
   echo "No device passed in, using f as default letter"
